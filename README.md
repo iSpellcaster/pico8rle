@@ -1,5 +1,6 @@
 # pico8rle
-An simple rle encoder for pic08
+An simple rle encoder for pic08.
+It uses Pillow (https://pillow.readthedocs.io/en/stable/) for image I/O, so make sure to install pillow. See: https://pillow.readthedocs.io/en/stable/installation.html
 
 ## Usage
 ```
