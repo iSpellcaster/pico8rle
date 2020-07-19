@@ -18,6 +18,9 @@ optional arguments:
   
 Running the script will output the data needed to use in pico8 on stdout.
 This includes a rle string for the image and a palette str (if `--pal 2` is used)
+
+## Limitations
+Expects a 128x128 image. Other image sizes not supported at the moment.
   
 ## pico8 functions to use the output
 Use the following methods to use the encoded image
