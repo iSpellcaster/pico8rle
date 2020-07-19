@@ -16,7 +16,7 @@ optional arguments:
   -p PAL, --pal PAL     the palette to use (0 = default, 1=secret, 2=best 16 colors from both)
   ```
   
-Running the script will output the code needed to use in pico8 on stdout.
+Running the script will output the data needed to use in pico8 on stdout.
 This includes a rle string for the image and a palette str (if `--pal 2` is used)
   
 ## pico8 functions to use the output
