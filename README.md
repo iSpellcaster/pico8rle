@@ -44,8 +44,8 @@ end
 
 
 -- draw_rle
--- draws a RLE encoded image at _x, _y. 
--- If trans is set, palette index 0 will be used for transparency
+-- draws a rle encoded image at _x, _y. 
+-- if trans is set, palette index 0 will be used for transparency
 function draw_rle(table,_x,_y, trans)
  local x,y,i,col,rle=0,0,1,0,0
 	while i < #table do
