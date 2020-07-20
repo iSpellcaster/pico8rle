@@ -102,8 +102,6 @@ def bestmatch(rgb, pal):
 	return min(color_diffs)[1]
 
 def getcolors(im, pal):
-	w,h = im.size
-	
 	y = 0
 	while y in range(0,h):
 		x = 0
@@ -125,9 +123,7 @@ def getcolors(im, pal):
 def formatRLE(col,run):
 	colRun = col << 8 | run
 	if compact:
-		strval = base64encode(colRun)
-		while len(strval) < 2:
-			strval = "0"+strval
+		strval = base64encode(colRun)		
 	else:
 		strval = format(colRun,outputFormat)
 	
@@ -136,13 +132,18 @@ def formatRLE(col,run):
 
 def rle():
 	rleCode = "\""
+	if compact:
+		rleCode = rleCode + base64encode(w)+base64encode(h)
+	else:
+		rleCode = rleCode + format(w,outputFormat)+","+format(h,outputFormat)+","
 	y = 0
-	while y in range(0,128):
+	
+	while y in range(0,h):
 		x = 0
 		run = 0
-		col = result[x+y*128]
-		while x in range(0,128):
-			if col == result[x+y*128]:
+		col = result[x+y*w]
+		while x in range(0,w):
+			if col == result[x+y*w]:
 				run = run+1
 			else:
 				rleCode = rleCode + formatRLE(col,run)
@@ -151,11 +152,11 @@ def rle():
 				#rleCode = rleCode + format(col,outputFormat) + "," + format(run,outputFormat) + ","
 				#rleCode = rleCode + chr(col) + chr(run)
 				
-				col = result[x+y*128]
+				col = result[x+y*w]
 				run = 1
 			x = x + 1
 		#end while x
-		if (y <127):
+		if (y <h-1):
 			#rleCode = rleCode + chr(col) + chr(run)
 			rleCode = rleCode + formatRLE(col,run)
 			if not compact:
@@ -181,7 +182,11 @@ def base64encode(value):
 			i=value%64
 			b64result=base64str[i:i+1] + b64result
 			value=math.floor(value/64)
-		return b64result
+
+		b64str = str(b64result)
+		while len(b64str) < 2:
+			b64str = "0"+b64str
+		return b64str
 
 def createpal(bestcolor, pal):
 	optimal = sorted(bestcolor, key=lambda col: col[1], reverse=True)
@@ -240,6 +245,14 @@ if pal < 0 or pal > 2:
 print("Encoding "+args.infile+" using pal "+str(pal) + " to "+outname)
 
 im = Image.open(args.infile)
+w, h = im.size
+if w > 255 or h > 255:
+	print("Image must not be wider or taller than 255 pixels.")
+	quit()
+
+
+result = [None] * (w*h)
+
 getcolors(im,pals[pal])
 if pal == 2:
 	cnt = 0
