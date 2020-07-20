@@ -30,9 +30,13 @@ Here're some values to compare:
  
 So I'd suggest that you use the -c/--compact switch and the explode64() function.
 
-## Limitations
-Expects a 128x128 image. Other image sizes not supported at the moment.
-But... I'm working on it.
+## Variable image size
+The tool will now encode images up to 255x255.
+This also means that I needed to add the image dimensions to the RLE output.
+To make sure your already imported images continue to work, add a 2020 at the start of existing rle data (to avoid having to re-encode them)
+I also added a spr_rle_flip() function to render a mirrored version of the image. Besides sprites, you could use this o count down on size of symmetric scenes.
+The actual code is not blazingly fast, but you should be able to use it for a couple of rather large sprites w/o too much trouble.
+
   
 ## pico8 functions to use the output
 Use the following methods to use the encoded image
@@ -49,12 +53,12 @@ function explode_hex(s, delimiter)
 end
 
 
-
 function explode64(s)
  local retval,lastpos,i = {},1,2
  
  while i <= #s do
-  add(retval,base64decode(sub(s, lastpos, i)))  
+  add(retval,base64decode(sub(s, lastpos, i)))
+  
   lastpos = i+1
   i += 2
  end
@@ -63,19 +67,19 @@ end
 
 
 function base64decode(str)
- val=0
- for i=1,#str do
-  c=sub(str,i,i)
-  for a=1,#base64str do
-   v=sub(base64str,a,a)
-   if c==v then
-    val *= 64
-    val += a-1
-    break
-   end
-  end
- end
- return val
+	val=0
+	for i=1,#str do
+	 c=sub(str,i,i)
+	 for a=1,#base64str do
+	 	v=sub(base64str,a,a)
+	 	if c==v then
+	 		val *= 64
+	 		val += a-1
+	 		break
+			end
+	 end
+	end
+	return val
 end
 
 function base64encode(val)
@@ -88,41 +92,81 @@ function base64encode(val)
  return res
 end
 
+function spr_rle(table,_x,_y)
+ local x,y,i,col,rle,w=0,0,3,0,0,table[1]
+	while i <= #table do
+		col = shr(table[i] & 0xff00,8)--% 16		
+		rle = table[i] & 0xff
+		i+=1
+		if col!=0 then
+			--rectfill is slightly faster
+			--line(x+_x,_y+y,_x+x+rle,_y+y,col)
+		 rectfill(x+_x,y+_y,x+_x+rle-1,_y+y,col)
+		end
+		x+=rle
+		if x >=w then
+			x = 0
+			y += 1
+		end
+	end
+end
 
-function draw_rle(table,_x,_y, trans)
- local x,y,i,col,rle=0,0,1,0,0
- while i <= #table do
-  col = shr(table[i] & 0xff00,8)--% 16		
-  rle = table[i] & 0xff
-  i+=1
-  if not trans or (trans and col >0) then
-   --rectfill is slightly faster
-   --line(x+_x,_y+y,_x+x+rle,_y+y,col)
-   rectfill(x+_x,_y+y,_x+x+rle,_y+y,col)
-  end
-  x+=rle
-  if x >=128 then
-   x = 0
-   y += 1
-  end
- end
+function spr_rle_flip(table,_x,_y)
+ local x,y,i,col,rle,w=0,0,3,0,0,table[1]
+	_x+=w
+	while i <= #table do
+		col = shr(table[i] & 0xff00,8)--% 16		
+		rle = table[i] & 0xff
+		i+=1
+		if col!=0 then
+			--rectfill is slightly faster
+			--line(x+_x,_y+y,_x+x+rle,_y+y,col)
+		 rectfill(_x-x-rle+1,y+_y,_x-x,_y+y,col)
+		end
+		x+=rle
+		if x >=w then
+			x = 0
+			y += 1
+		end
+	end
+end
+
+
+function draw_rle(table,_x,_y)
+ local x,y,i,col,rle,w=0,0,3,0,0,table[1]
+ 
+	while i <= #table do
+		col = shr(table[i] & 0xff00,8)--% 16		
+		rle = table[i] & 0xff
+		i+=1
+		--rectfill is slightly faster
+		--line(x+_x,_y+y,_x+x+rle,_y+y,col)
+		rectfill(x+_x,y+_y,x+_x+rle-1,_y+y,col)
+		
+		x+=rle
+		if x >=w then
+			x = 0
+			y +=1
+		end
+	end
 end
 
 function setpal(palstr)
- local i,palindex
+	local i,palindex
  palindex=explode_hex(palstr,",")
- for i=1,#palindex do
-  pal(i-1,palindex[i],1)
- end
+	for i=1,#palindex do
+	 	pal(i-1,palindex[i],1)
+	end
 end
 
 
 function pal2()
- local i
+	local i
  for i=0,15 do
-  pal(i,128+i,1)
- end
+	 	pal(i,128+i,1)
+	end
 end
+
 
 function cprint(txt,x,y,cols)
  local len,org=#txt*4+4,clip() 
