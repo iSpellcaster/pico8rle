@@ -91,7 +91,7 @@ end
 
 function draw_rle(table,_x,_y, trans)
  local x,y,i,col,rle=0,0,1,0,0
- while i < #table do
+ while i <= #table do
   col = shr(table[i] & 0xff00,8)--% 16		
   rle = table[i] & 0xff
   i+=1
