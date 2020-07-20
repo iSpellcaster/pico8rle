@@ -124,12 +124,12 @@ def getcolors(im, pal):
 
 def formatRLE(col,run):
 	colRun = col << 8 | run
-	strval = base64encode(colRun)
-	#format(colRun,outputFormat)
-	#base64encode(colRun) #
 	if compact:
+		strval = base64encode(colRun)
 		while len(strval) < 2:
 			strval = "0"+strval
+	else:
+		strval = format(colRun,outputFormat)
 	
 	return strval
 	#return format(col,outputFormat) + "," + format(run,outputFormat)
@@ -175,7 +175,7 @@ def base64encode(value):
 	base64str='0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()_-+=[]}{;:<>,./?~|'
 	b64result=""
 	if value == 0:
-		return "0"
+		return "00"
 	else:
 		while value > 0:
 			i=value%64
@@ -214,7 +214,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("infile", help="the image to RLE encode")
 parser.add_argument("-o", "--outfile", help="write resulting image to disk (default: output.png)")
 parser.add_argument("-p", "--pal", type=int, help="the palette to use (0 = default, 1=secret, 2=best 16 colors from both)")
-parser.add_argument("-c", "--compact", 	action='store_true',help="stores the RLE info in 3 chars, no comma")
+parser.add_argument("-c", "--compact", 	action='store_true',help="stores the RLE info in 2 chars per run, no comma")
 
 args = parser.parse_args()
 
@@ -231,11 +231,10 @@ else:
 
 if args.compact:
 	compact = True
-	
-base64str='0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()_-+=[]}{;:<>,./?\\|'	
+		
 	
 if pal < 0 or pal > 2:
-	print("-p, --pal must be either 0 (normal pal), 1 (secret pal) or 2 (best 16 of both pals)")	
+	print("-p, --pal must be either 0 (normal pal), 1 (secret pal) or 2 (best 16 of both pals)")
 	quit()
 
 print("Encoding "+args.infile+" using pal "+str(pal) + " to "+outname)
