@@ -39,22 +39,15 @@ Use the following methods to use the encoded image
 ```
 base64str='0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()_-+=[]}{;:<>,./?~|'
 
--- heaviliy based on splixel's
--- explode_internal function:
--- https://www.lexaloffle.com/bbs/?tid=28160
--- i changed the code to interpret the contents as hex values
 function explode_hex(s, delimiter)
- local retval,lastpos,i = {},1,1
- 
- for i=1,#s do
-  if sub(s,i,i) == delimiter then
-   add(retval, ("0x"..sub(s, lastpos, i-1))+0)
-   i += 1
-   lastpos = i
-  end
+ local retval,i=split(s,delimiter,false)
+  
+ for i=1,#retval do
+  retval[i] =("0x"..retval[i])+0
  end
  return retval
 end
+
 
 
 function explode64(s)
