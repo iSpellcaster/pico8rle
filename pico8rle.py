@@ -1,6 +1,7 @@
 #!/usr/bin/env python	
 from PIL import Image
 import argparse
+import math
 
 pals = [[
  [0x00,0x00,0x00],
@@ -87,6 +88,7 @@ result = [None] * (128*128)
 counts = [None] * 32
 bestcolor = []
 outputFormat='x'
+compact=False
 
 def bestmatch(rgb, pal):	
 	r, g, b = rgb
@@ -122,11 +124,14 @@ def getcolors(im, pal):
 
 def formatRLE(col,run):
 	colRun = col << 8 | run
-	strval = format(colRun,outputFormat)
-	if len(strval) < 3:
-		return "0"+strval
-	else:
-		return strval
+	strval = base64encode(colRun)
+	#format(colRun,outputFormat)
+	#base64encode(colRun) #
+	if compact:
+		while len(strval) < 2:
+			strval = "0"+strval
+	
+	return strval
 	#return format(col,outputFormat) + "," + format(run,outputFormat)
 
 def rle():
@@ -140,7 +145,9 @@ def rle():
 			if col == result[x+y*128]:
 				run = run+1
 			else:
-				rleCode = rleCode + formatRLE(col,run) + ","
+				rleCode = rleCode + formatRLE(col,run)
+				if not compact:
+					rleCode =rleCode+ ","
 				#rleCode = rleCode + format(col,outputFormat) + "," + format(run,outputFormat) + ","
 				#rleCode = rleCode + chr(col) + chr(run)
 				
@@ -150,15 +157,31 @@ def rle():
 		#end while x
 		if (y <127):
 			#rleCode = rleCode + chr(col) + chr(run)
-			rleCode = rleCode + formatRLE(col,run) + ","
+			rleCode = rleCode + formatRLE(col,run)
+			if not compact:
+				rleCode =rleCode+ ","
 			#rleCode = rleCode + format(col,outputFormat) + "," + format(run,outputFormat) + ","
 		else:
 			#rleCode = rleCode + chr(col) + chr(run)+ "\""
 			rleCode = rleCode + formatRLE(col,run)+ "\""
+			
+
 			#rleCode = rleCode + format(col,outputFormat) + "," + format(run,outputFormat) + "\""
 		y = y + 1
 	#end while y
 	return rleCode
+
+def base64encode(value):
+	base64str='0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()_-+=[]}{;:<>,./?~|'
+	b64result=""
+	if value == 0:
+		return "0"
+	else:
+		while value > 0:
+			i=value%64
+			b64result=base64str[i:i+1] + b64result
+			value=math.floor(value/64)
+		return b64result
 
 def createpal(bestcolor, pal):
 	optimal = sorted(bestcolor, key=lambda col: col[1], reverse=True)
@@ -191,6 +214,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("infile", help="the image to RLE encode")
 parser.add_argument("-o", "--outfile", help="write resulting image to disk (default: output.png)")
 parser.add_argument("-p", "--pal", type=int, help="the palette to use (0 = default, 1=secret, 2=best 16 colors from both)")
+parser.add_argument("-c", "--compact", 	action='store_true',help="stores the RLE info in 3 chars, no comma")
+
 args = parser.parse_args()
 
 if args.pal:
@@ -203,9 +228,18 @@ if args.outfile:
 	basename=outname[:outname.rfind(".")]
 else:
 	basename=args.infile[:args.infile.rfind(".")]
+
+if args.compact:
+	compact = True
+	
+base64str='0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()_-+=[]}{;:<>,./?\\|'	
 	
 if pal < 0 or pal > 2:
 	print("-p, --pal must be either 0 (normal pal), 1 (secret pal) or 2 (best 16 of both pals)")
+	print()
+	print(base64str[63:64])
+	print(len(base64str))
+	print(base64encode(63))
 	quit()
 
 print("Encoding "+args.infile+" using pal "+str(pal) + " to "+outname)
@@ -228,5 +262,5 @@ if pal == 2:
 	print(basename +"_pal=" + palstr)
 
 rleStr=rle()
-print("-- " +args.infile + "rle endcoded charcount:"+ str(len(rleStr)))
+print("-- " +args.infile + " rle endcoded charcount:"+ str(len(rleStr)))
 print(basename +"_rle=" + rleStr)
