@@ -24,8 +24,15 @@ This includes a rle string for the image and a palette str (if `--pal 2` is used
 There's a new parameter -c/ --compact which stores the rle data in a base64 format.
 You can explode these using the explode64 function below. This reduces the length of most runs from 4 characters (including the separator comma) to 2 chars.
 
+Here're some values to compare:
+ - Antiriad title, hexencoded with commas (default): 8467 characters
+ - Antiriad title, base64 encoded, without commas (-c): 4852 characters
+ 
+So I'd suggest that you use the -c/--compact switch and the explode64() function.
+
 ## Limitations
 Expects a 128x128 image. Other image sizes not supported at the moment.
+But... I'm working on it.
   
 ## pico8 functions to use the output
 Use the following methods to use the encoded image
