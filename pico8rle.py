@@ -235,11 +235,7 @@ if args.compact:
 base64str='0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()_-+=[]}{;:<>,./?\\|'	
 	
 if pal < 0 or pal > 2:
-	print("-p, --pal must be either 0 (normal pal), 1 (secret pal) or 2 (best 16 of both pals)")
-	print()
-	print(base64str[63:64])
-	print(len(base64str))
-	print(base64encode(63))
+	print("-p, --pal must be either 0 (normal pal), 1 (secret pal) or 2 (best 16 of both pals)")	
 	quit()
 
 print("Encoding "+args.infile+" using pal "+str(pal) + " to "+outname)
