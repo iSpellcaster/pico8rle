@@ -12,7 +12,7 @@ The python code works like this
 
 In case you're wondering why the less complex scene on the right (with just the kanji characters) requires more cpu: well, it's from an older version of the code. :)
 
-So, it's *a simple rle encoder for pic08.*
+So, it's *a simple rle encoder for pico8.*
 
 ## Dependencies
 
