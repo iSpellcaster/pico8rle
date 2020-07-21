@@ -3,7 +3,7 @@
 This tool allows you to convert images to be used in pico8 w/o eating up additional sprite memory.
 The python code works like this
 - map the image to the pico8 palette (either the normal, secret, or the 16 closest from both, your choice)
-- It then converts it into horizontal lines, stored as `col C for N number of pixels`. This is also where the name comes from. RLE stands for "run length encoding". It works best if you have large blocks (well lines) of a single color. It will work horribly with dithered images.
+- It then converts it into horizontal lines, stored as `col C for N number of pixels`. This is also where the name comes from. RLE stands for "run length encoding". It works best if you have large blocks (well, lines) of a single color. It will work horribly with dithered images.
 - this informtaion is stored in a string in a really basic way. The only "clever" thing here is, that I used a base64 encode, to keep the resulting size somewhat down.
 - You can copy&paste this string into your pico8 project, and display the image using the functions given below. Either as background iamge, or with transparncy for index 0. 
 
