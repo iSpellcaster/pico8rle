@@ -10,7 +10,6 @@ The python code works like this
 ![alt text](https://github.com/iSpellcaster/pico8rle/raw/master/rle%20p8_2.gif "Short demo of the code")
 ![alt text](https://github.com/iSpellcaster/pico8rle/raw/master/rle%20p8_1.gif "Short demo of the code")
 
-In case you're wondering why the less complex scene on the right (with just the kanji characters) requires more cpu: well, it's from an older version of the code. :)
 
 So, it's *a simple rle encoder for pico8.*
 
