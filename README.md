@@ -75,9 +75,12 @@ pico8rle.py -p 2 -c batman.png
 Emcodes `batman.png` in base64 encoding, using the 16 best fitting colors from the standard and secret pico8 palette.
 In this case, you'll also get a palette string you can use to set this palette using `setpal' (see below).
 
-## Using the tool in your own project
-To use this in your own project, you'll need python (v3.x) installed on your machine and the Pillow image library for python. Links can be found above.
-Then you copy the string output into your pico8 code. Using the functions given below, you can then display your images from your `_draw()` function.
+## Using it in your own project
+To run the script, you'll need python (v3.x) installed on your machine and the Pillow image library for python. Links can be found above.
+To sue the encoded images, you can copy&paste the functions given below into your own code, 
+
+While you could expldoe the images in your _draw() function, I'd recommend that you explode them once, and only call the draw_rle(), spr_rle() and spr_rle_flipped() in your actual drawing code.
+
 
 You can find an example cartridge on the pico8 BBs: https://www.lexaloffle.com/bbs/?tid=38887
 I've also uploaded this cart into this repo:
