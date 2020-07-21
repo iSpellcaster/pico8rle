@@ -7,6 +7,9 @@ The python code works like this
 - this informtaion is stored in a string in a really basic way. The only "clever" thing here is, that I used a base64 encode, to keep the resulting size somewhat down.
 - You can copy&paste this string into your pico8 project, and display the image using the functions given below. Either as background iamge, or with transparncy for index 0. 
 
+![alt text](https://github.com/iSpellcaster/pico8rle/raw/master/rle%20p8_2.gif "Short demo of the code")
+
+
 So, it's **a simple rle encoder for pic08.**
 
 ## Dependencies
@@ -68,7 +71,9 @@ To use this in your own project, you'll need python (v3.x) installed on your mac
 Then you copy the string output into your pico8 code. Using the functions given below, you can then display your images from your `_draw()` function.
 
 You can find an example cartridge on the pico8 BBs: https://www.lexaloffle.com/bbs/?tid=38887
-I've also uploaded this cart into this repo.
+I've also uploaded this cart into this repo:
+![alt text](https://github.com/iSpellcaster/pico8rle/raw/master/rle.p8.png "Short demo of the code")
+
 
   
 ## pico8 functions to use the output
