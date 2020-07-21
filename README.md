@@ -1,5 +1,16 @@
 # pico8rle
-An simple rle encoder for pic08.
+
+This tool allows you to convert images to be used in pico8 w/o eating up additional sprite memory.
+The python code works like this
+- map the image to the pico8 palette (either the normal, secret, or the 16 closest from both, your choice)
+- It then converts it into horizontal lines, stored as `col C for N number of pixels'. This is also where the name comes from. RLE stands for "run length encoding". It works best if you have large blocks (well lines) of a single color. It will work horribly with dithered images.
+- this informtaion is stored in a string in a really basic way. The only "clever" thing here is, that I used a base64 encode, to keep the resulting size somewhat down.
+- You can copy&paste this string into your pico8 project, and display the image using the functions given below. Either as background iamge, or with transparncy for index 0. 
+
+So, it's **a simple rle encoder for pic08.**
+
+## Dependencies
+
 It uses Pillow (https://pillow.readthedocs.io/en/stable/) for image I/O, so make sure to install pillow. See: https://pillow.readthedocs.io/en/stable/installation.html
 
 ## Usage
@@ -36,6 +47,28 @@ This also means that I needed to add the image dimensions to the RLE output.
 To make sure your already imported images continue to work, add a 2020 at the start of existing rle data (to avoid having to re-encode them)
 I also added a spr_rle_flip() function to render a mirrored version of the image. Besides sprites, you could use this o count down on size of symmetric scenes.
 The actual code is not blazingly fast, but you should be able to use it for a couple of rather large sprites w/o too much trouble.
+
+## Example calls of the tool
+```
+pico8rle.py -p 0 -c kanji.png
+```
+Encodes `kanji.png` in base64 encoding, using the standard pico8 palette.
+```
+pico8rle.py -p 1 -c antiriad.png
+```
+Encodes `antiriad.png` in base64 encoding, using the secret pico8 palette.
+```
+pico8rle.py -p 2 -c batman.png
+```
+Emcodes `batman.png` in base64 encoding, using the 16 best fitting colors from the standard and secret pico8 palette.
+In this case, you'll also get a palette string you can use to set this palette using `setpal' (see below).
+
+## Using the tool in your own project
+To use this in your own project, you'll need python (v3.x) installed on your machine and the Pillow image library for python. Links can be found above.
+Then you copy the string output into your pico8 code. Using the functions given below, you can then display your images from your `_draw()` function.
+
+You can find an example cartridge on the pico8 BBs: https://www.lexaloffle.com/bbs/?tid=38887
+I've also uploaded this cart into this repo.
 
   
 ## pico8 functions to use the output
