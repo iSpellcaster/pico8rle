@@ -48,10 +48,16 @@ So I'd suggest that you use the -c/--compact switch and the explode64() function
 
 ## Variable image size
 The tool will now encode images up to 255x255.
-This also means that I needed to add the image dimensions to the RLE output.
-To make sure your already imported images continue to work, add a 2020 at the start of existing rle data (to avoid having to re-encode them)
+This also means that I had to add the image dimensions to the RLE output. Which gives you the benefit that the first to alues in your table will be the width and height of the encoded image.
+```
+sprite = explode64(sprite_rle)
+spr_width = sprite[1]
+spr_height = sprite[2]
+```
+
 I also added a spr_rle_flip() function to render a mirrored version of the image. Besides sprites, you could use this o count down on size of symmetric scenes.
 The actual code is not blazingly fast, but you should be able to use it for a couple of rather large sprites w/o too much trouble.
+
 
 ## Example calls of the tool
 ```
