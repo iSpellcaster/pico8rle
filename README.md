@@ -117,109 +117,96 @@ end
 
 
 function base64decode(str)
- val=0
- for i=1,#str do
-  c=sub(str,i,i)
-  for a=1,#base64str do
-   v=sub(base64str,a,a)
-   if c==v then
-    val *= 64
-    val += a-1
-    break
-   end
-  end
- end
- return val
+	val=0
+	for i=1,#str do
+	 c=sub(str,i,i)
+	 for a=1,#base64str do
+	 	v=sub(base64str,a,a)
+	 	if c==v then
+	 		val *= 64
+	 		val += a-1
+	 		break
+			end
+	 end
+	end
+	return val
 end
 
--- chances are, you'll never use this function
--- and it's not required by any of the other functions
--- so, feel free to delete it :)
-function base64encode(val)
- local res,cur,i="", val
- while cur > 0 do
-  i=cur%64
-  res=sub(base64str,i+1,i+1)..res
-  cur=flr(cur/64)
- end 	
- return res
-end
-
+-- optimized rle drawing functions
+-- big thanks to frederic souchu
+-- ( @fsouchu on twitter )
+-- for the help
 function spr_rle(table,_x,_y)
- local x,y,i,col,rle,w=0,0,3,0,0,table[1]
- while i <= #table do
-  col = shr(table[i] & 0xff00,8)--% 16		
-  rle = table[i] & 0xff
-  i+=1
-  if col!=0 then
-   --rectfill is slightly faster
-   --line(x+_x,_y+y,_x+x+rle,_y+y,col)
-   rectfill(x+_x,y+_y,x+_x+rle-1,_y+y,col)
-  end
-  x+=rle
-  if x >=w then
-   x = 0
-   y += 1
-  end
- end
+ local x,y,i,w=_x,_y,3,table[1]+_x
+	for i=3,#table do		
+	 local t=table[i]
+		local col,rle = (t& 0xff00)>>8
+	                 ,t& 0xff
+		
+		if col!=0 then
+			rectfill(x,y,x+rle-1,y,col)
+		end
+		x+=rle
+		if x >=w then
+			x = _x
+			y += 1
+		end
+	end
 end
 
 function spr_rle_flip(table,_x,_y)
- local x,y,i,col,rle,w=0,0,3,0,0,table[1]
- _x+=w
-  while i <= #table do
-  col = shr(table[i] & 0xff00,8)--% 16		
-  rle = table[i] & 0xff
-  i+=1
-  if col!=0 then
-   --rectfill is slightly faster
-   --line(x+_x,_y+y,_x+x+rle,_y+y,col)
-   rectfill(_x-x-rle+1,y+_y,_x-x,_y+y,col)
-  end
-  x+=rle
-  if x >=w then
-   x = 0
-   y += 1
-  end
- end
+ local w=table[1]
+ local x,y,i,x2=_x+w,_y,3,_x+w
+ 	
+	for i =3,#table do
+	 local t=table[i]
+		local col,rle = (t& 0xff00)>>8
+	                 ,t& 0xff 
+		
+		if col!=0 then
+			rectfill(x-rle+1,y,x,y,col)
+		end
+		x-=rle
+		if x <=_x then
+			x = x2
+			y += 1
+		end
+	end
 end
 
-
 function draw_rle(table,_x,_y)
- local x,y,i,col,rle,w=0,0,3,0,0,table[1]
-
- while i <= #table do
-  col = shr(table[i] & 0xff00,8)--% 16		
-  rle = table[i] & 0xff
-  i+=1
-  --rectfill is slightly faster
-  --line(x+_x,_y+y,_x+x+rle,_y+y,col)
-  rectfill(x+_x,y+_y,x+_x+rle-1,_y+y,col)
-
-  x+=rle
-  if x >=w then
-   x = 0
-   y +=1
-  end
- end
+ local x,y,i,w=_x,_y,3,table[1]+_x
+ 
+	for i=3,#table do
+		local t=table[i]
+		local col,rle = (t& 0xff00)>>8
+	                 ,t& 0xff
+		
+		rectfill(x,y,x+rle-1,y,col)
+		
+		x+=rle
+		if x >=w then
+			x = _x
+			y += 1
+		end
+	end
 end
 
 function setpal(palstr)
- local i,palindex
+	local i,palindex
  palindex=explode_hex(palstr,",")
- for i=1,#palindex do
-  pal(i-1,palindex[i],1)
- end
+	for i=1,#palindex do
+	 	pal(i-1,palindex[i],1)
+	end
 end
 
--- set "secret" palette
+
 function pal2()
- local i
+	local i
  for i=0,15 do
-  pal(i,128+i,1)
- end
+	 	pal(i,128+i,1)
+	end
 end
-
 
 function cprint(txt,x,y,cols)
  local len,org=#txt*4+4,clip() 
