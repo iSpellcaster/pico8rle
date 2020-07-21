@@ -8,9 +8,10 @@ The python code works like this
 - You can copy&paste this string into your pico8 project, and display the image using the functions given below. Either as background iamge, or with transparncy for index 0. 
 
 ![alt text](https://github.com/iSpellcaster/pico8rle/raw/master/rle%20p8_2.gif "Short demo of the code")
+![alt text](https://github.com/iSpellcaster/pico8rle/raw/master/rle%20p8_1.gif "Short demo of the code")
 
 
-So, it's **a simple rle encoder for pic08.**
+So, it's *a simple rle encoder for pic08.*
 
 ## Dependencies
 
