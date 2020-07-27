@@ -92,7 +92,7 @@ outputFormat='x'
 compact=False
 
 def bestmatch(rgb, pal):	
-	r, g, b,a = rgb
+	r, g, b  = rgb[0], rgb[1], rgb[2]
 	color_diffs = []
 	index = 0
 	for color in pal:
