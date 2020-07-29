@@ -1,4 +1,4 @@
-#!/usr/bin/env python	
+#!/usr/bin/env python
 from PIL import Image
 import argparse
 import math
@@ -14,8 +14,8 @@ pals = [[
  [0xc2,0xc3,0xc7],
  [0xff,0xf1,0xe8],
 
- [0xff,0xa3,0x00],
  [0xff,0x00,0x4d],
+ [0xff,0xa3,0x00],
  [0xff,0xec,0x27],
  [0x00,0xe4,0x36],
 
@@ -54,8 +54,8 @@ pals = [[
  [0xc2,0xc3,0xc7],
  [0xff,0xf1,0xe8],
 
- [0xff,0xa3,0x00],
  [0xff,0x00,0x4d],
+ [0xff,0xa3,0x00],
  [0xff,0xec,0x27],
  [0x00,0xe4,0x36],
 
@@ -91,7 +91,7 @@ bestcolor = []
 outputFormat='x'
 compact=False
 
-def bestmatch(rgb, pal):	
+def bestmatch(rgb, pal):
 	r, g, b  = rgb[0], rgb[1], rgb[2]
 	color_diffs = []
 	index = 0
@@ -116,7 +116,7 @@ def getcolors(im, pal):
 			else:
 				counts[col] = 1
 			x = x + 1
-		#end while x			
+		#end while x
 		y = y + 1
 	#end while y
 #end getcolors
@@ -124,10 +124,10 @@ def getcolors(im, pal):
 def formatRLE(col,run):
 	colRun = col << 8 | run
 	if compact:
-		strval = base64encode(colRun)		
+		strval = base64encode(colRun)
 	else:
 		strval = format(colRun,outputFormat)
-	
+
 	return strval
 	#return format(col,outputFormat) + "," + format(run,outputFormat)
 
@@ -138,7 +138,7 @@ def rle():
 	else:
 		rleCode = rleCode + format(w,outputFormat)+","+format(h,outputFormat)+","
 	y = 0
-	
+
 	while y in range(0,h):
 		x = 0
 		run = 0
@@ -152,7 +152,7 @@ def rle():
 					rleCode =rleCode+ ","
 				#rleCode = rleCode + format(col,outputFormat) + "," + format(run,outputFormat) + ","
 				#rleCode = rleCode + chr(col) + chr(run)
-				
+
 				col = result[x+y*w]
 				run = 1
 			x = x + 1
@@ -166,7 +166,7 @@ def rle():
 		else:
 			#rleCode = rleCode + chr(col) + chr(run)+ "\""
 			rleCode = rleCode + formatRLE(col,run)+ "\""
-			
+
 
 			#rleCode = rleCode + format(col,outputFormat) + "," + format(run,outputFormat) + "\""
 		y = y + 1
@@ -203,14 +203,14 @@ def createpal(bestcolor, pal):
 		orgIndex+=16
 		if orgIndex > 15:
 			orgIndex = orgIndex - 16 + 128
-		
+
 		palstr= palstr+format(orgIndex, outputFormat)
 		if i < max-1:
 			palstr = palstr + ","
 		else:
 			palstr = palstr + "\""
 
-	
+
 	return palstr,newpal
 
 
@@ -221,6 +221,7 @@ parser.add_argument("infile", help="the image to RLE encode")
 parser.add_argument("-o", "--outfile", help="write resulting image to disk (default: output.png)")
 parser.add_argument("-p", "--pal", type=int, help="the palette to use (0 = default, 1=secret, 2=best 16 colors from both)")
 parser.add_argument("-c", "--compact", 	action='store_true',help="stores the RLE info in 2 chars per run, no comma")
+parser.add_argument("-e", "--extra", action='store_true', help="Helpful with pal=2 to store a 32 color version of the image to cross-check color usage. This file will be named extra32_<filename>")
 
 args = parser.parse_args()
 
@@ -237,8 +238,8 @@ else:
 
 if args.compact:
 	compact = True
-		
-	
+
+
 if pal < 0 or pal > 2:
 	print("-p, --pal must be either 0 (normal pal), 1 (secret pal) or 2 (best 16 of both pals)")
 	quit()
@@ -247,14 +248,17 @@ print("Encoding "+args.infile+" using pal "+str(pal) + " to "+outname)
 
 im = Image.open(args.infile)
 w, h = im.size
-if w > 255 or h > 255:
-	print("Image must not be wider or taller than 255 pixels.")
+if w > 256 or h > 256:
+	print("Image must not be wider or taller than 256 pixels.")
 	quit()
 
 
 result = [None] * (w*h)
 
 getcolors(im,pals[pal])
+if args.extra:
+    im.save("extra32_"+outname)
+
 if pal == 2:
 	cnt = 0
 	for i in range(0,32):
